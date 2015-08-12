@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ActivityStreams = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
  * activity-streams
- *   version 1.0.0
+ *   version 2.0.3
  *   http://github.com/silverbucket/activity-streams
  *
  * Developed and Maintained by:
@@ -26,18 +26,18 @@ var objs        = new ArrayKeys({ identifier: '@id' }),
     specialObjs = [], // the objects don't get rejected for bad props
     baseProps   = {
       stream: [
-        '@id', '@type', 'actor', 'target', 'object', '@context', 'context', 
+        '@id', '@type', 'actor', 'target', 'object', '@context', 'context',
         'published', 'error'
       ],
       object: [
         '@id', '@type', '@context',
-        'alias', 'attachedTo', 'attachment', 'attributedTo', 'attributedWith', 
-        'content', 'context', 'contextOf', 'displayName', 'endTime', 'generator', 
-        'generatorOf', 'icon', 'image', 'inReplyTo', 'memberOf', 'location', 
-        'locationOf', 'objectOf', 'originOf', 'preview', 'previewOf', 'provider', 
-        'providerOf', 'published', 'rating', 'resultOf', 'replies', 'scope', 
-        'scopeOf', 'startTime', 'summary', 'tag', 'tagOf', 'targetOf', 'title', 
-        'updated', 'url', 'titleMap', 'contentMap', 'members'
+        'alias', 'attachedTo', 'attachment', 'attributedTo', 'attributedWith',
+        'content', 'context', 'contextOf', 'displayName', 'endTime', 'generator',
+        'generatorOf', 'icon', 'image', 'inReplyTo', 'memberOf', 'location',
+        'locationOf', 'objectOf', 'originOf', 'preview', 'previewOf', 'provider',
+        'providerOf', 'published', 'rating', 'resultOf', 'replies', 'scope',
+        'scopeOf', 'startTime', 'summary', 'tag', 'tagOf', 'targetOf', 'title',
+        'topic', 'updated', 'url', 'titleMap', 'contentMap', 'members'
       ]
     },
     customProps  = {},
@@ -80,7 +80,6 @@ function validateObject(type, obj) {
         }
 
         if (specialObjs.indexOf(obj['@type']) < 0) {
-          console.log('bad obj: ', obj);
           return 'invalid property ' + keys[i];
         }
       }
@@ -198,7 +197,7 @@ module.exports = function (opts) {
           customProps[keys[i]] = [];
           for (var j = 0, jlen = opts.customProps[keys[i]].length; j < jlen; j += 1) {
             customProps[keys[i]].push(opts.customProps[keys[i]][j]);
-          }        
+          }
         }
       }
     }
@@ -222,11 +221,11 @@ module.exports = function (opts) {
 },{"array-keys":2,"event-emitter":4}],2:[function(require,module,exports){
 /*!
  * array-keys
- *   version 2.0.0
+ *   version 2.1.2
  *   http://github.com/silverbucket/array-keys
  *
  * Developed and Maintained by:
- *   Nick Jennings <nick@silverbucket.net> copyright 2014
+ *   Nick Jennings <nick@silverbucket.net> copyright 2015
  *
  * array-keys is released under the MIT license (see LICENSE).
  *
@@ -323,7 +322,7 @@ ArrayKeys.prototype.removeRecord = function (id, dontEmit) {
 
   // start looking for the record at the same point as the idx entry
   for (var i = idx; i >= 0; i = i - 1) {
-    if (this._store[i][this._identifier] === id) {
+    if ((this._store[i]) && (this._store[i][this._identifier] === id)) {
       this._store.splice(i, 1);
       this._idx.splice(idx, 1);
       setTimeout(this.emitEvent.bind(this, 'remove', id, dontEmit), 0);
@@ -332,8 +331,8 @@ ArrayKeys.prototype.removeRecord = function (id, dontEmit) {
   }
 
   // if it was not found, start at the end and break at the idx number
-  for (var n = this._store.length - 1; n !== idx; n = n - 1) {
-    if (this._store[n][this._identifier] === id) {
+  for (var n = this._store.length - 1; n >= idx; n = n - 1) {
+    if ((this._store[i]) && (this._store[n][this._identifier] === id)) {
       this._store.splice(n, 1);
       this._idx.splice(idx, 1);
       setTimeout(this.emitEvent.bind(this, 'remove', id, dontEmit), 0);
@@ -365,6 +364,13 @@ ArrayKeys.prototype.forEachRecord = function (cb) {
 
 ArrayKeys.prototype.getCount = function () {
   return this._store.length;
+};
+
+ArrayKeys.prototype.removeAll = function () {
+  for (var i = this._store.length - 1; i >= 0; i = i - 1) {
+    delete this._store[i];
+  }
+  this._store = [];
 };
 
 module.exports = ArrayKeys;

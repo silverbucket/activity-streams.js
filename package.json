@@ -27,8 +27,8 @@
     "test_lcov": "node_modules/.bin/c8 -r lcov node_modules/.bin/mocha test/**/*.js",
     "browser_test": "node_modules/.bin/karma start --single-run --browsers ChromeHeadless,FirefoxHeadless karma.config.js",
     "build": "node_modules/.bin/webpack --mode production",
-    "release": "run-s build test browser_test",
-    "travis": "run-s test_lcov browser_test"
+    "release": "yarn run build && yarn run test && yarn run browser_test",
+    "travis": "yarn run test_lcov && yarn run browser_test"
   },
   "keywords": [
     "activity",
